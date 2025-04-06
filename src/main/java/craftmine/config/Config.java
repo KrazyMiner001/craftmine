@@ -20,4 +20,7 @@ public class Config {
 
     @SerialEntry(comment = "Enables Dry Lands Fix\nThe Dry Lands mine ingredient is broken in the base game and is unobtainable, this fix makes it obtainable while keeping the apparent intended way to obtain it")
     public boolean enableDryLandsFix = true;
+
+    @SerialEntry(comment = "Enables Exp Calculation Fix\nThe exp calculation adds multipliers instead of multiplying them and multiplies exp of items by stack size twice. This fixes both of those bugs")
+    public boolean enableExpCalcFix = true;
 }
