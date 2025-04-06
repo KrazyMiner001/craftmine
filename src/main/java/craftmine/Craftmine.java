@@ -1,5 +1,6 @@
 package craftmine;
 
+import craftmine.config.Config;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,5 +20,7 @@ public class Craftmine implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+
+		Config.HANDLER.load();
 	}
 }

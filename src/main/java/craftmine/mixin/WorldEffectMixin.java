@@ -1,5 +1,6 @@
 package craftmine.mixin;
 
+import craftmine.config.Config;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public abstract class WorldEffectMixin {
     @Inject(method = "builder", at = @At("TAIL"), cancellable = true)
     private static void builder(String string, CallbackInfoReturnable<WorldEffect.Builder> cir) {
+        if (!Config.HANDLER.instance().enableDryLandsFix) return;
         if (!Objects.equals(string, "dry_land")) return;
 
         WorldEffect.Builder builder = new WorldEffect.Builder(string);
