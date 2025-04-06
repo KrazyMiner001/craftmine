@@ -3,6 +3,7 @@
 	"package": "craftmine.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"ServerLevelMixin",
 		"WorldEffectMixin"
 	],
 	"injectors": {
