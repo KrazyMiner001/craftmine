@@ -26,4 +26,7 @@ public class Config {
 
     @SerialEntry(comment = "Bonus Mult for Exp Calculation Fix\nThe broken exp calculation often gives a lot more exp than the correct one. This balences the fixed calculation a bit by adding an extra mult.")
     public int bonusMult = 5;
+
+    @SerialEntry
+    public boolean enableExtraWorldEffects = true;
 }
