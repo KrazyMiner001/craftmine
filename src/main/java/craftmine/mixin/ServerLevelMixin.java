@@ -55,6 +55,7 @@ public abstract class ServerLevelMixin {
 
         xpReward *= worldEffectsMultiplier;
         xpReward *= serverPlayer.getAttributeValue(Attributes.EXPERIENCE_GAIN_MODIFIER);
+        xpReward *= Config.HANDLER.instance().bonusMult;
         int immediateXp = (int)(xpReward * immediateXpPortion);
         int xpAsOrbs = (int)(xpReward * (1.0F - immediateXpPortion));
         serverPlayer.giveExperiencePoints(immediateXp);
