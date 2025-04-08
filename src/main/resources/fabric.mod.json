@@ -42,5 +42,10 @@
 	"suggests": {
 		"another-mod": "*"
 	},
-	"accessWidener": "craftmine.accesswidener"
+	"accessWidener": "craftmine.accesswidener",
+	"custom": {
+		"loom:injected_interfaces": {
+			"net/minecraft/class_11109\u0024class_11110": ["craftmine/interfaces/BetterWorldEffectRegister"]
+		}
+	}
 }

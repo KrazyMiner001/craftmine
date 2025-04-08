@@ -1,7 +1,7 @@
 package craftmine;
 
 import craftmine.config.Config;
-import craftmine.config.worldeffects.CraftmineWorldEffects;
+import craftmine.worldeffects.CraftmineWorldEffects;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
