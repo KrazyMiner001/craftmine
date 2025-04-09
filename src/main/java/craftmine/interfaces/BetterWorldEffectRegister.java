@@ -1,6 +1,6 @@
 package craftmine.interfaces;
 
-import net.minecraft.world.level.mines.WorldEffect;
+import net.minecraft.aprilfools.WorldEffect;
 
 import java.util.function.Supplier;
 

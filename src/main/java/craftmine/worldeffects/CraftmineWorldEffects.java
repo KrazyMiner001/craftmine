@@ -2,22 +2,22 @@ package craftmine.worldeffects;
 
 import craftmine.Craftmine;
 import craftmine.config.Config;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.mines.WorldEffect;
-import net.minecraft.world.level.mines.WorldEffects;
+import net.minecraft.aprilfools.WorldEffect;
+import net.minecraft.aprilfools.WorldEffects;
+import net.minecraft.item.Items;
+import net.minecraft.world.GameRules;
 
 public class CraftmineWorldEffects {
     public static final WorldEffect ETERNAL_DAY = WorldEffect.builder("eternal_day")
-            .withItemModelOf(Items.LIGHT_BLUE_DYE)
-            .withNameStyle(WorldEffects.CHALLENGE_STYLE)
+            .itemModel(Items.LIGHT_BLUE_DYE)
+            .nameStyle(WorldEffects.field_59197)
             .onMineEnter(serverLevel -> {
-                serverLevel.theGame().overworld().setDayTime(8000L);
-                serverLevel.theGame().getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, serverLevel.theGame());
+                serverLevel.getGameInstance().getOverworld().setTimeOfDay(8000L);
+                serverLevel.getGameInstance().getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(false, serverLevel.getGameInstance());
             })
-            .onMineLeave(serverLevel -> serverLevel.theGame().getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(true, serverLevel.theGame()))
+            .onMineLeave(serverLevel -> serverLevel.getGameInstance().getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(true, serverLevel.getGameInstance()))
             .incompatibleWith(WorldEffects.ETERNAL_NIGHT)
-            .xpModifier(0.5F)
+            .experienceModifier(0.5F)
             .craftmine$register(Craftmine.MOD_ID, () -> Config.HANDLER.instance().enableExtraWorldEffects);
 
     public static void init() {}

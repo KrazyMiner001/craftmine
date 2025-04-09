@@ -1,34 +1,34 @@
 package craftmine.util;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 
 import java.util.Optional;
 
 public class MinesRegistryEntriesHelper {
-    public static <T> Optional<Holder.Reference<T>> removeLevelPrefix(Holder<T> holder, HolderGetter<T> holderGetter, ResourceKey<Registry<T>> registry) {
-        Optional<ResourceKey<T>> resourceKey = holder.unwrapKey();
+    public static <T> Optional<RegistryEntry.Reference<T>> removeLevelPrefix(RegistryEntry<T> registryEntry, RegistryEntryLookup<T> registryEntryLookup, RegistryKey<Registry<T>> registry) {
+        Optional<RegistryKey<T>> resourceKey = registryEntry.getKey();
         if (resourceKey.isEmpty()) return Optional.empty();
 
-        ResourceKey<T> key = resourceKey.get();
+        RegistryKey<T> key = resourceKey.get();
 
-        ResourceLocation resourceLocation = key.location();
+        Identifier identifier = key.getValue();
 
-        String[] splitResourceLocation = resourceLocation.getPath().split("/");
-        if (splitResourceLocation.length != 2) return Optional.empty();
-        if (!splitResourceLocation[0].matches("level[0-9]+")) return Optional.empty();
+        String[] splitIdentifier = identifier.getPath().split("/");
+        if (splitIdentifier.length != 2) return Optional.empty();
+        if (!splitIdentifier[0].matches("level[0-9]+")) return Optional.empty();
 
-        ResourceKey<T> remappedKey = ResourceKey.create(
+        RegistryKey<T> remappedKey = RegistryKey.of(
                 registry,
-                new ResourceLocation(
-                        resourceLocation.getNamespace(),
-                        splitResourceLocation[1]
+                new Identifier(
+                        identifier.getNamespace(),
+                        splitIdentifier[1]
                 )
         );
 
-        return holderGetter.get(remappedKey);
+        return registryEntryLookup.getOptional(remappedKey);
     }
 }
