@@ -1,6 +1,9 @@
 package craftmine.mixin;
 
 import craftmine.config.Config;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.impl.launch.FabricLauncherBase;
+import net.fabricmc.loader.impl.lib.mappingio.tree.MappingTree;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.aprilfools.WorldEffect;
 import net.minecraft.component.DataComponentTypes;
@@ -17,8 +20,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin {
@@ -26,16 +32,31 @@ public abstract class ServerWorldMixin {
     private void cleanInventoryAndReward(ServerPlayerEntity serverPlayer, float immediateXpPortion, CallbackInfo ci) {
         if (!Config.HANDLER.instance().enableExpCalcFix) return;
 
+        String namespace = Objects.equals(FabricLoader.getInstance().getMappingResolver().getCurrentRuntimeNamespace(), "intermediary") ? "official" : "named";
+        MappingTree mappings = FabricLauncherBase.getLauncher().getMappingConfiguration().getMappings();
+
         double xpReward = 10.0;
         List<ItemStack> list = new ArrayList<>();
 
+        Method worldEffectsMethod;
+        try {
+            worldEffectsMethod = WorldModifiersComponent.class.getMethod(Objects.requireNonNull(Objects.requireNonNull(mappings.getMethod("net/minecraft/class_11056", "comp_3946", null, 0)).getName(namespace)));
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
         for (ItemStack itemStack : serverPlayer.getInventory()) {
             WorldModifiersComponent worldModifiers = itemStack.get(DataComponentTypes.WORLD_MODIFIERS);
             if (worldModifiers != null) {
-                for (WorldEffect worldEffect : worldModifiers.effects()) {
-                    if (itemStack.contains(DataComponentTypes.WORLD_EFFECT_UNLOCK)) {
-                        ((ServerWorld) (Object) this).method_69083(worldEffect);
+                try {
+                    @SuppressWarnings("unchecked") List<WorldEffect> worldEffects = (List<WorldEffect>) worldEffectsMethod.invoke(worldModifiers);
+                    for (WorldEffect worldEffect : worldEffects) {
+                        if (itemStack.contains(DataComponentTypes.WORLD_EFFECT_UNLOCK)) {
+                            //noinspection DataFlowIssue
+                            ((ServerWorld) (Object) this).method_69083(worldEffect);
+                        }
                     }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
                 }
             } else if (itemStack.isIn(ItemTags.CARRY_OVER)) {
                 list.add(itemStack.copy());
@@ -49,8 +70,20 @@ public abstract class ServerWorldMixin {
         serverPlayer.getInventory().clear();
         float worldEffectsMultiplier = 1.0F;
 
+        MappingTree.MethodMapping experienceModifierMethodMapping = mappings.getMethod("net/minecraft/class_11109", "comp_4004", null, 0);
+        Method experienceModifierMethod;
+        try {
+            assert experienceModifierMethodMapping != null;
+            experienceModifierMethod = WorldEffect.class.getMethod(Objects.requireNonNull(experienceModifierMethodMapping.getName(namespace)));
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
         for (WorldEffect worldEffect2 : ((ServerWorld) (Object) this).method_69125()) {
-            worldEffectsMultiplier *= worldEffect2.experienceModifier();
+            try {
+                worldEffectsMultiplier *= (float) experienceModifierMethod.invoke(worldEffect2);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         xpReward *= worldEffectsMultiplier;
